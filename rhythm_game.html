@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Game</title>
+    <link rel="stylesheet" href="css/rhythm.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+            background: #111;
+        }
+        #game {
+            width: 800px;
+            height: 100vh;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            background: #111;
+        }
+        #track {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .track-guide {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .top-ui {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .left-section, .center-section, .right-section {
+            margin: 0 10px;
+        }
+        .score-container, .combo-container {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        #speedControl {
+            margin-bottom: 10px;
+        }
+        #speedSlider {
+            margin-left: 10px;
+        }
+        .difficulty-container {
+            font-size: 18px;
+        }
+        .difficulty-btn {
+            width: 80px;
+            height: 30px;
+            margin: 0 10px;
+            background: rgba(51, 51, 51, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            line-height: 30px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+        }
+        .difficulty-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .hitLine {
+            position: absolute;
+            bottom: 150px;
+            width: 100%;
+            height: 4px;
+            background: #ff0000;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="track">
+            <!-- 轨道指示器 -->
+            <div class="track-guide" style="left: 20%"></div>
+            <div class="track-guide" style="left: 40%"></div>
+            <div class="track-guide" style="left: 60%"></div>
+            <div class="track-guide" style="left: 80%"></div>
+        </div>
+        
+        <div class="top-ui">
+            <div class="game-ui-left">
+                <div id="score">Score: 0 points</div>
+                <div id="combo">Combo: 0x</div>
+            </div>
+            
+            <div class="center-section">
+                <div id="speedControl">
+                    <label for="speedSlider">速度: <span id="speedValue">1.0</span>x</label>
+                    <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+            </div>
+        </div>
+
+        <div class="difficulty-container">
+            <button class="difficulty-btn" data-difficulty="easy">简单</button>
+            <button class="difficulty-btn" data-difficulty="normal">普通</button>
+            <button class="difficulty-btn" data-difficulty="hard">困难</button>
+            <button class="difficulty-btn" data-difficulty="expert">专家</button>
+        </div>
+        
+        <div class="hitLine"></div>
+        
+        <div id="startScreen">
+            <div class="start-content">
+                <h1>Rhythm Game</h1>
+                <div class="instructions">
+                    <p>使用键盘按键击打下落的音符</p>
+                    <p>A S D F 对应左到右四个轨道</p>
+                    <p>当前难度：<span id="difficultyName">普通</span></p>
+                    <p>按任意游戏键开始！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { RhythmGame } from './js/game.js';
+        
+        // 初始化游戏
+        const game = new RhythmGame();
+        
+        // 难度选择
+        const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+        difficultyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 更新按钮状态
+                difficultyButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // 设置难度
+                game.setDifficulty(button.dataset.difficulty);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+#midi-status {
+    background-color: #e8f5e9;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #81c784;
+}
+
+#start-button {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#start-button:hover {
+    background-color: #1976d2;
+}
+
+#start-button:disabled {
+    background-color: #bdbdbd;
+    cursor: not-allowed;
+}
+
+#game-canvas {
+    border: 2px solid #333;
+    background-color: #fff;
+    margin: 20px 0;
+    display: none;
+}
+
+#score {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+#devices-list {
+    list-style: none;
+    padding: 0;
+}
+
+#devices-list li {
+    background-color: #fff;
+    padding: 8px;
+    margin: 4px 0;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+} 

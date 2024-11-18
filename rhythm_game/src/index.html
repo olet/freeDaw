@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节奏游戏</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #midi-status {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        #start-button {
+            display: block;
+            margin: 20px auto;
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        #start-button:disabled {
+            background: linear-gradient(45deg, #9e9e9e, #bdbdbd);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #score {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #game-canvas {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            margin: 20px auto;
+        }
+
+        #midi-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 150px;
+        }
+
+        #midi-info span {
+            color: #2196f3;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                padding: 10px;
+            }
+            
+            #game-canvas {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        #pause-button {
+            display: block;
+            margin: 20px auto;
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #pause-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .tempo-control {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            text-align: center;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tempo-control label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        #tempo-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #tempo-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2196f3;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #tempo-slider::-webkit-slider-thumb:hover {
+            background: #1976d2;
+        }
+
+        #tempo-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2196f3;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+        }
+
+        #tempo-slider::-moz-range-thumb:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>节奏游戏</h1>
+        <div id="midi-status">MIDI Status: Initializing...</div>
+        <button id="start-button">开始游戏</button>
+        <div id="score">分数: 0</div>
+        <div class="tempo-control">
+            <label for="tempo-slider">速率: <span id="tempo-value">100%</span></label>
+            <input 
+                type="range" 
+                id="tempo-slider" 
+                min="50" 
+                max="200" 
+                value="100" 
+                step="5"
+            >
+        </div>
+        <canvas id="game-canvas" width="1000" height="600"></canvas>
+    </div>
+    <div id="midi-info" class="hidden">
+        当前按键: <span id="current-note">-</span><br>
+        力度: <span id="current-velocity">-</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
